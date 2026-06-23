@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
+import { apiFetch } from "./lib/api";
 export default function App() {
     const [boards, setBoards] = useState([]);
     const [activeBoardId, setActiveBoardId] = useState(null);
@@ -42,7 +42,7 @@ export default function App() {
 
     const fetchBoards = async () => {
         try {
-            const res = await fetch('/api/boards');
+            const res = await apiFetch('/api/boards');
             const data = await res.json();
             setBoards(data);
             setLoading(false);
@@ -53,7 +53,7 @@ export default function App() {
 
     const fetchBoardDetails = async (id) => {
         try {
-            const res = await fetch(`/api/boards/${id}`);
+            const res = await apiFetch(`/api/boards/${id}`);
             const data = await res.json();
             setBoardDetails(data);
         } catch (e) {
@@ -63,7 +63,7 @@ export default function App() {
 
     const fetchMembers = async () => {
         try {
-            const res = await fetch('/api/members');
+            const res = await apiFetch('/api/members');
             const data = await res.json();
             setMembers(data);
         } catch (e) {
@@ -73,7 +73,7 @@ export default function App() {
 
     const fetchTags = async () => {
         try {
-            const res = await fetch('/api/tags');
+            const res = await apiFetch('/api/tags');
             const data = await res.json();
             setTags(data);
         } catch (e) {
@@ -86,7 +86,7 @@ export default function App() {
         e.preventDefault();
         if (!newBoard.name.trim()) return;
         try {
-            const res = await fetch('/api/boards', {
+            const res = await apiFetch('/api/boards', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newBoard)
@@ -104,7 +104,7 @@ export default function App() {
     const handleAddBoardMember = async (memberId) => {
         if (!boardDetails) return;
         try {
-            const res = await fetch(`/api/boards/${boardDetails.id}/members`, {
+            const res = await apiFetch(`/api/boards/${boardDetails.id}/members`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ member_id: memberId })
@@ -121,7 +121,7 @@ export default function App() {
         const name = newListNames[boardId];
         if (!name || !name.trim()) return;
         try {
-            const res = await fetch('/api/lists', {
+            const res = await apiFetch('/api/lists', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ board_id: boardId, name })
@@ -140,7 +140,7 @@ export default function App() {
     const handleDeleteList = async (listId) => {
         if (!confirm('Are you sure you want to delete this list? All cards in it will be lost.')) return;
         try {
-            await fetch(`/api/lists/${listId}`, { method: 'DELETE' });
+            await apiFetch(`/api/lists/${listId}`, { method: 'DELETE' });
             setBoardDetails({
                 ...boardDetails,
                 lists: boardDetails.lists.filter(l => l.id !== listId)
@@ -155,7 +155,7 @@ export default function App() {
         const title = newCardTitles[listId];
         if (!title || !title.trim()) return;
         try {
-            const res = await fetch('/api/cards', {
+            const res = await apiFetch('/api/cards', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ board_list_id: listId, title })
@@ -178,7 +178,7 @@ export default function App() {
 
     const handleUpdateCardDetails = async (cardId, fields) => {
         try {
-            const res = await fetch(`/api/cards/${cardId}`, {
+            const res = await apiFetch(`/api/cards/${cardId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(fields)
@@ -194,9 +194,10 @@ export default function App() {
     };
 
     const handleDeleteCard = async (cardId) => {
+
         if (!confirm('Delete this card?')) return;
         try {
-            await fetch(`/api/cards/${cardId}`, { method: 'DELETE' });
+            await apiFetch(`/api/cards/${cardId}`, { method: 'DELETE' });
             setBoardDetails({
                 ...boardDetails,
                 lists: boardDetails.lists.map(l => ({
@@ -215,7 +216,7 @@ export default function App() {
         e.preventDefault();
         if (!newMember.name.trim() || !newMember.email.trim()) return;
         try {
-            const res = await fetch('/api/members', {
+            const res = await apiFetch('/api/members', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newMember)
@@ -234,7 +235,7 @@ export default function App() {
         e.preventDefault();
         if (!newTag.name.trim()) return;
         try {
-            const res = await fetch('/api/tags', {
+            const res = await apiFetch('/api/tags', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newTag)
@@ -303,7 +304,7 @@ export default function App() {
         const newOrder = targetList ? targetList.cards.length - 1 : 0;
 
         try {
-            await fetch('/api/cards/reorder', {
+            await apiFetch('/api/cards/reorder', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

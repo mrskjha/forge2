@@ -2,15 +2,16 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.jsx';
 import './index.css';
-
+import { apiFetch } from "./lib/api";
 // Centralized API Base URL routing for production
-const API_BASE_URL = import.meta.env.VITE_API_URL || '';
-
-if (API_BASE_URL) {
+const isLocalhost = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
+if (!isLocalhost) {
     const originalFetch = window.fetch;
-    window.fetch = (input, init) => {
-        if (typeof input === 'string' && input.startsWith('/api')) {
-            return originalFetch(`${API_BASE_URL}${input}`, init);
+    window.fetch = async (input, init) => {
+        const url = typeof input === 'string' ? input : input.url;
+        if (url.startsWith('/api/')) {
+            const newUrl = `${window.location.origin}${url}`;
+            return originalFetch(newUrl, init);
         }
         return originalFetch(input, init);
     };
