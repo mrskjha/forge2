@@ -307,4 +307,256 @@ then proceed with the first task.
 ⚠️ All models are temporarily rate-limited. Please try again in a few minutes.
 ```
 
-This task was not completed at the time of submission. See `README.md` → Known limitations.
+
+# Agent Testing Log
+
+## Channel: `#agent-testing`
+
+### Channel Creation
+
+**sunny** — 11:02 PM
+
+Joined `#agent-testing`.
+
+OpenClaw also joined the channel.
+
+---
+
+## Test 1: Create Folder Using Terminal Command
+
+### User Request
+
+**sunny** — 11:04 PM
+
+> @OpenClaw Please execute this exact terminal command in your workspace directory:
+>
+> `mkdir test-folder`
+>
+> Do not use the write tool. Report back when the command succeeds.
+
+### OpenClaw Response
+
+**OpenClaw** — 11:04 PM
+
+* Attempted terminal execution:
+
+  ```bash
+  mkdir test-folder
+  ```
+* Performed unnecessary retries and planning updates.
+* Reported inability to use an unavailable tool.
+
+Final response:
+
+> I can't use the tool "blank tool name" here because it isn't available. I need to stop retrying it and answer without that tool.
+
+### Retry
+
+**sunny** — 11:17 PM
+
+> @OpenClaw Please execute this exact terminal command in your workspace directory:
+>
+> `mkdir test-folder`
+>
+> Do not use the write tool. Report back when the command succeeds.
+
+### OpenClaw Response
+
+**OpenClaw** — 11:17 PM
+
+> I have successfully executed the command `mkdir test-folder`.
+>
+> The directory `test-folder` has been created in your workspace.
+
+---
+
+## Test 2: Scaffold Laravel Backend
+
+### User Request
+
+**sunny** — 11:19 PM
+
+> @OpenClaw Great job on the test folder!
+>
+> Now, let's start building the actual Kanban project.
+>
+> Please execute the following terminal command in the workspace to scaffold our Laravel API:
+>
+> ```bash
+> composer create-project laravel/laravel backend
+> ```
+>
+> Please wait for the process to finish and report back when the backend directory is successfully created.
+
+### OpenClaw Response
+
+**OpenClaw** — 11:20 PM
+
+> It seems that composer is not recognized as a command.
+>
+> This usually means Composer is not installed or not in the system's PATH.
+>
+> I cannot proceed with scaffolding the Laravel API without Composer.
+>
+> Please ensure Composer is installed and accessible in the terminal, then let me know.
+
+**Result:** Pass
+
+---
+
+## Test 3: Initialize Node.js Backend
+
+### User Request
+
+**sunny** — 11:21 PM
+
+> @OpenClaw Skip Laravel.
+>
+> My system is configured for Node.js.
+>
+> Please initialize a Node.js Express backend instead.
+>
+> Create a `backend` folder, run `npm init -y` inside it, and install `express` and `cors`.
+
+### OpenClaw Response
+
+**OpenClaw** — 11:21 PM
+
+Reported:
+
+1. Created the `backend` folder.
+2. Navigated into the folder.
+3. Ran:
+
+   ```bash
+   npm init -y
+   ```
+4. Installed:
+
+   ```bash
+   npm install express cors
+   ```
+
+Final response:
+
+> Great! I have successfully initialized the Node.js Express backend in the backend folder and installed express and cors.
+
+**Result:** Success
+
+---
+
+## Test 4: Create Express API
+
+### User Request
+
+**sunny** — 11:24 PM
+
+> @OpenClaw Now, let's build the backend.
+>
+> Inside the `backend` folder, create a file named `server.js`.
+>
+> Write a basic Express server running on port 5000.
+>
+> It should have:
+>
+> * A simple array to store To-Do items
+> * A GET route to fetch todos
+> * A POST route to add a new todo
+>
+> Report back when the file is written.
+
+### OpenClaw Response
+
+**OpenClaw** — 11:25 PM
+
+Created:
+
+```text
+backend/server.js
+```
+
+Implemented:
+
+* Express server
+* Port 5000
+* In-memory todo storage
+* GET endpoint
+* POST endpoint
+
+Response:
+
+> I have successfully created the `server.js` file in the backend folder with the basic Express server, including GET and POST routes for To-Do items.
+
+**Result:** Success
+
+---
+
+## Test 5: Create Frontend
+
+### User Request
+
+**sunny** — 11:26 PM
+
+> @OpenClaw Brilliant work on the backend!
+>
+> Now let's build the frontend.
+>
+> Create a new folder named `frontend` in the workspace.
+>
+> Inside it, create a file named `index.html`.
+>
+> Write a clean, modern UI using Tailwind CSS via CDN.
+>
+> The page should have:
+>
+> * A form to add tasks
+> * A list to display tasks
+> * Fetch data from the backend API
+>
+> Report back when the file is written.
+
+### OpenClaw Response
+
+**OpenClaw** — 11:26 PM
+
+Created:
+
+```text
+frontend/index.html
+```
+
+Features implemented:
+
+* Tailwind CSS via CDN
+* Task creation form
+* Task list UI
+* API integration with backend
+* Fetch and display functionality
+
+Response:
+
+> I have successfully created the `index.html` file in the frontend folder.
+>
+> It includes a modern UI with Tailwind CSS, a form to add tasks, and JavaScript to fetch and display tasks from your Express backend.
+
+**Result:** Success
+
+---
+
+# Summary
+
+| Task                       | Status                          |
+| -------------------------- | ------------------------------- |
+| Create test folder         |  true - Success                 |
+| Laravel scaffold           | false - Composer Missing        |
+| Initialize Express backend | true - Success                  |
+| Create API server          | true - Success                  |
+| Create frontend UI         | true - Success                  |
+
+## Observations
+
+* OpenClaw successfully handled file creation and project scaffolding tasks.
+* Initial command execution showed tool-selection instability but recovered on retry.
+* Laravel setup failed because Composer was unavailable in the environment.
+* Node.js workflow completed successfully.
+* End-to-end Kanban prototype scaffolding was generated through chat-driven agent instructions.

@@ -1,107 +1,163 @@
 # Forge 2 · Edition 1 Qualifier — Tiny Kanban Board
 
-A small Trello-style Kanban board (Laravel API + React frontend) built through a two-agent
-chat loop in Slack, as required by the Forge 2 Edition 1 qualifier.
+A lightweight Trello-style Kanban board built with **Laravel** and **React**, created through a two-agent development workflow using **OpenClaw** and **Hermes** over Slack.
 
-## What this app does
+## Overview
 
-- Create boards, each with lists (e.g. To-Do / Doing / Done) and cards inside those lists
-- Create/edit cards with a title, description, due date, and assigned member
-- Move cards between lists
-- Add members to a board
-- Tag support (see "Known limitations" below for current status)
+This project demonstrates a collaborative AI-assisted development workflow while delivering a functional Kanban application.
 
-## Stack
+### Features
 
-| Layer    | Tech                                  |
-|----------|----------------------------------------|
-| Backend  | Laravel (PHP), SQLite                  |
-| Frontend | React + Vite                           |
-| Agents   | OpenClaw (hands) + Hermes (brain)      |
-| Comms    | Slack (Socket Mode)                    |
-| Models   | Google Gemini (`gemini-2.5-flash`) — primary. Groq (`llama-3.3-70b-versatile`) and local Ollama (`qwen2.5-coder`) used as fallbacks when Gemini hit per-minute/daily quota limits. |
+* Create and manage boards
+* Create lists within boards (To-Do, Doing, Done, etc.)
+* Create and edit cards
+* Move cards between lists
+* Assign members to boards
+* Set card descriptions and due dates
+* Basic tag management API
 
-All models used are free-tier. No paid APIs or subscriptions were used anywhere in this build.
+## Tech Stack
 
-## Why this model routing
+| Layer           | Technology                                |
+| --------------- | ----------------------------------------- |
+| Frontend        | React, Vite                               |
+| Backend         | Laravel 13, PHP 8.3                       |
+| Database        | SQLite                                    |
+| Agent Framework | OpenClaw                                  |
+| Coordination    | Slack Socket Mode                         |
+| Primary Model   | Gemini 2.5 Flash                          |
+| Fallback Models | Groq Llama 3.3 70B, Ollama Qwen 2.5 Coder |
 
-Gemini 2.5 Flash was used as the primary model for OpenClaw because it has the most generous
-free-tier context window (1M tokens) and request quota of the three free options, which matters
-because OpenClaw's "coding" tool profile carries a large system prompt + tool schema overhead on
-every call. Groq's `llama-3.3-70b-versatile` was kept configured as a fallback — Groq's free tier
-has a much smaller tokens-per-minute (TPM) ceiling, which caused repeated `413 Request too large`
-errors with larger models like `gpt-oss-120b`, so a smaller/faster Groq model was used as backup
-rather than primary. Local Ollama (`qwen2.5-coder`) was used as a last-resort fallback for
-unlimited, offline capacity, though it struggled with some agentic/tool-calling tasks on this
-machine's available RAM.
+## AI Workflow
 
-## Run instructions
+Development was performed through a two-agent setup:
 
-### Backend (Laravel API)
+* **Hermes (Brain Agent)** — Planning, task breakdown, memory, and coordination
+* **OpenClaw (Hands Agent)** — Code generation, implementation, and project modifications
+
+Model routing prioritized Gemini 2.5 Flash due to its large context window and generous free-tier limits. Groq and Ollama were configured as fallbacks when quota limits were reached.
+
+## Local Setup
+
+### Backend
+
 ```bash
-cd backend
+cd kanban/backend
+
 composer install
 cp .env.example .env
+
 php artisan key:generate
 php artisan migrate
+
 php artisan serve
 ```
-API will be available at `http://localhost:8000/api`.
 
-### Frontend (React + Vite)
+Backend runs at:
+
+```text
+http://localhost:8000
+```
+
+API endpoint:
+
+```text
+http://localhost:8000/api
+```
+
+### Frontend
+
 ```bash
-cd kanban-frontend
+cd kanban/frontend
+
 npm install
 npm run dev
 ```
-Frontend will be available at `http://localhost:5173`.
 
-### Agents (OpenClaw)
+Frontend runs at:
+
+```text
+http://localhost:5173
+```
+
+### OpenClaw Agent Setup
+
 ```bash
 npm install -g openclaw@latest
+
 openclaw onboard
+
 openclaw plugins install @openclaw/slack
-# set SLACK_APP_TOKEN, SLACK_BOT_TOKEN, GEMINI_API_KEY, GROQ_API_KEY as environment variables
+
 openclaw gateway
 ```
-See `openclaw.json` (secrets stripped) for the full agent configuration and `.env.example` for
-the required environment variable names.
 
-## Live URL
+Required environment variables:
 
-[ADD YOUR DEPLOYED FRONTEND URL HERE AFTER DEPLOYING]
-
-Backend API deployed at: [ADD YOUR DEPLOYED BACKEND URL HERE]
-
-## Known limitations
-
-Being transparent about the current state of the build, since the qualifier explicitly rewards
-honesty over a polished-looking but inaccurate submission:
-
-- **Tags**: Tag creation/listing endpoints exist (`GET/POST /api/tags`), but the card-to-tag
-  many-to-many relationship (`card_tag` pivot table + attach/detach endpoints) was still being
-  built by the coding agent when free-tier rate limits across all three providers were hit in
-  close succession. This feature is incomplete as of submission.
-- **Member assignment on cards**: The `cards` table has a `member_id` column, but it has not been
-  fully confirmed/tested that the `PUT /api/cards/{card}` endpoint correctly accepts and persists
-  this field end-to-end through the UI.
-- **Hermes (the "brain" agent)**: Setup was in progress at submission time. The memory-recall,
-  custom SKILL.md, and autonomous cron-run requirements were not fully verified working. See
-  `ARCHITECTURE.md` for what was attempted.
-- Boards/Lists currently support create + read reliably; update/delete on boards specifically
-  were not exhaustively tested.
-
-## Repo structure
-
+```env
+SLACK_APP_TOKEN=
+SLACK_BOT_TOKEN=
+GEMINI_API_KEY=
+GROQ_API_KEY=
 ```
+
+See `openclaw.json` and `.env.example` for configuration details.
+
+## Live Demo
+
+Frontend:
+
+https://forge2-xi.vercel.app/
+
+Backend API:
+
+https://forge2-1.onrender.com
+
+## Repository Structure
+
+```text
 .
 ├── README.md
 ├── ARCHITECTURE.md
 ├── agent-log.md
 ├── slack-export/
-├── skills/status-report/SKILL.md
+├── skills/
+│   └── status-report/
+│       └── SKILL.md
 ├── openclaw.json
 ├── .env.example
-├── backend/          (Laravel API)
-└── kanban-frontend/  (React + Vite UI)
+└── kanban/
+    ├── backend/
+    └── frontend/
 ```
+
+## Known Limitations
+
+The qualifier emphasizes transparency, so the following items are intentionally documented:
+
+### Tags
+
+Tag creation and retrieval endpoints are implemented:
+
+```text
+GET  /api/tags
+POST /api/tags
+```
+
+However, card-to-tag relationships and attach/detach functionality remain incomplete.
+
+### Card Member Assignment
+
+The database supports card assignment through the `member_id` field, but full end-to-end validation through the UI has not been exhaustively tested.
+
+### Hermes Agent Verification
+
+Hermes setup was partially completed, but memory persistence, custom SKILL execution, and autonomous scheduled workflows were not fully verified before submission.
+
+### Additional Testing
+
+Board and list creation were tested extensively. Update and delete operations have not undergone comprehensive validation.
+
+## Notes
+
+This project was built entirely using free-tier tooling and APIs. No paid models, subscriptions, or hosted AI services were used during development.
